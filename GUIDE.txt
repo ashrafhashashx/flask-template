@@ -1,0 +1,7 @@
+mkdir flask-template
+cd flask-template
+python -m venv venv
+venv\Scripts\activate
+pip install flask
+pip install gunicorn
+pip freeze > requirements.txt
