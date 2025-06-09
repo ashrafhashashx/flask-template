@@ -7,7 +7,12 @@
     <h1>Messages</h1>
     <ul>
         {% for msg in messages %}
-            <li>{{ msg.id }}: {{ msg.text }}</li>
+            <li>
+                {{ msg.id }}: {{ msg.text }}
+                <form method="POST" action="/delete/{{ msg.id }}" style="display:inline;">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
         {% endfor %}
     </ul>
 

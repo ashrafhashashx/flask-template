@@ -48,6 +48,14 @@ def add_message():
     db.session.commit()
     return "Message added! <a href='/'>Go back</a>"
 
+@app.route("/delete/<int:msg_id>", methods=["POST"])
+def delete_message(msg_id):
+    msg = Message.query.get_or_404(msg_id)
+    db.session.delete(msg)
+    db.session.commit()
+    return "Message deleted! <a href='/'>Go back</a>"
+
+
 # Create the database tables (only runs if they don't exist yet)
 with app.app_context():
     db.create_all()
