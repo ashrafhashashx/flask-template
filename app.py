@@ -1,5 +1,5 @@
 # Import necessary modules
-from flask import Flask, request          # Flask for building web routes, request for reading URL parameters
+from flask import Flask, request, render_template  # Flask for building web routes, request for reading URL parameters
 from flask_sqlalchemy import SQLAlchemy   # SQLAlchemy is a database toolkit for Python
 import os                                 # Used to access environment variables like the database URL
 
@@ -20,20 +20,33 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)        # Unique ID for each message (auto-increment)
     text = db.Column(db.String(100), nullable=False)    # Text of the message (required field)
 
-# Route for the home page: shows all messages in the database
-@app.route("/")
-def home():
-    messages = Message.query.all()  # Fetch all messages
-    return "<br>".join([f"{m.id}: {m.text}" for m in messages])  # Show messages as simple HTML
+# # Route for the home page: shows all messages in the database
+# @app.route("/")
+# def home():
+#     messages = Message.query.all()  # Fetch all messages
+#     return "<br>".join([f"{m.id}: {m.text}" for m in messages])  # Show messages as simple HTML
+#
+# # Route to add a new message: /add?text=YourMessage
+# @app.route("/add")
+# def add_message():
+#     text = request.args.get("text", "Hello from Flask!")  # Get message text from URL parameter
+#     msg = Message(text=text)                              # Create new Message object
+#     db.session.add(msg)                                   # Add it to the session
+#     db.session.commit()                                   # Save it to the database
+#     return f"Added: {msg.text}"                           # Confirmation
 
-# Route to add a new message: /add?text=YourMessage
-@app.route("/add")
+@app.route("/", methods=["GET"])
+def home():
+    messages = Message.query.all()
+    return render_template("home.html", messages=messages)
+
+@app.route("/add", methods=["POST"])
 def add_message():
-    text = request.args.get("text", "Hello from Flask!")  # Get message text from URL parameter
-    msg = Message(text=text)                              # Create new Message object
-    db.session.add(msg)                                   # Add it to the session
-    db.session.commit()                                   # Save it to the database
-    return f"Added: {msg.text}"                           # Confirmation
+    text = request.form.get("text")
+    msg = Message(text=text)
+    db.session.add(msg)
+    db.session.commit()
+    return "Message added! <a href='/'>Go back</a>"
 
 # Create the database tables (only runs if they don't exist yet)
 with app.app_context():
