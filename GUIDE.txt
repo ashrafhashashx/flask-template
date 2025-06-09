@@ -5,3 +5,4 @@ venv\Scripts\activate
 pip install flask
 pip install gunicorn
 pip freeze > requirements.txt
+pip install psycopg2-binary flask_sqlalchemy
