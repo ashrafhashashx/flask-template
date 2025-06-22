@@ -57,6 +57,24 @@ def delete_message(msg_id):
     return "Person deleted! <a href='/'>Go back</a>"
 
 
+@app.route("/debug")
+def debug_data():
+    people = Person.query.all()
+
+    # Turn all people into a list of dictionaries
+    data = []
+    for person in people:
+        entry = {
+            "id": person.id,
+            "name": person.name,
+            "email": person.email,
+            "age": person.age
+        }
+        data.append(entry)
+
+    # Display as plain text
+    return f"<pre>{data}</pre>"
+
 
 # Create the database tables (only runs if they don't exist yet)
 with app.app_context():
