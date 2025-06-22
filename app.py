@@ -1,5 +1,9 @@
 from flask import Flask, request, render_template  # Flask for building web routes, request for reading URL parameters
 from flask_sqlalchemy import SQLAlchemy   # SQLAlchemy is a database toolkit for Python
+from os import environ  # Used to access environment variables like the database URL
+from flask import send_file
+from io import BytesIO
+from reportlab.pdfgen import canvas
 
 # Create the Flask application
 app = Flask(__name__)
@@ -20,10 +24,11 @@ class Person(db.Model):
     email = db.Column(db.String(100), nullable=False)
     age = db.Column(db.Integer, nullable=False)
 
-@app.route("/", methods=["GET"])
+@app.route("/")
 def home():
     people = Person.query.all()
     return render_template("home.html", people=people)
+
 
 @app.route("/add", methods=["POST"])
 def add_person():
@@ -67,6 +72,23 @@ def debug_data():
 
     # Display as plain text
     return f"<pre>{data}</pre>"
+
+
+
+@app.route("/download/<int:person_id>")
+def download_pdf(person_id):
+    person = Person.query.get_or_404(person_id)
+
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer)
+    p.drawString(100, 750, f"Name: {person.name}")
+    p.drawString(100, 730, f"Email: {person.email}")
+    p.drawString(100, 710, f"Age: {person.age}")
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    return send_file(buffer, as_attachment=True, download_name="person.pdf", mimetype="application/pdf")
 
 
 # Create the database tables (only runs if they don't exist yet)

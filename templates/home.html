@@ -1,33 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Personal Info Form</title>
+    <title>Personal Info</title>
 </head>
 <body>
     <h1>Submit Your Info</h1>
-    <form method="post" action="/add">
-        <label>Name:</label><br>
-        <input type="text" name="name" required><br>
-
-        <label>Email:</label><br>
-        <input type="email" name="email" required><br>
-
-        <label>Age:</label><br>
-        <input type="number" name="age" required><br><br>
-
-        <button type="submit">Submit</button>
+    <form action="/add" method="post">
+        Name: <input type="text" name="name" required><br>
+        Email: <input type="email" name="email" required><br>
+        Age: <input type="number" name="age" required><br>
+        <input type="submit" value="Submit">
     </form>
 
-    <h2>All Submissions</h2>
+    <h2>Saved People</h2>
     <ul>
-        {% for person in people %}
-            <li>
-                {{ person.name }} ({{ person.email }}, {{ person.age }} years old)
-                <form method="POST" action="/delete/{{ person.id }}" style="display:inline;">
-                    <button type="submit">Delete</button>
-                </form>
-            </li>
-        {% endfor %}
+    {% for person in people %}
+        <li>
+            {{ person.name }} - {{ person.email }} - {{ person.age }}
+            <a href="{{ url_for('download_pdf', person_id=person.id) }}">Download PDF</a>
+        </li>
+    {% else %}
+        <li>No people saved yet.</li>
+    {% endfor %}
     </ul>
 </body>
 </html>
