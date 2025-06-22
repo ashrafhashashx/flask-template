@@ -1,18 +1,11 @@
-# Import necessary modules
-from json import dumps, dump
-from pathlib import Path
-
 from flask import Flask, request, render_template  # Flask for building web routes, request for reading URL parameters
 from flask_sqlalchemy import SQLAlchemy   # SQLAlchemy is a database toolkit for Python
-import os                                 # Used to access environment variables like the database URL
-
-OUTPUT_PATH = Path('OUTPUT')
 
 # Create the Flask application
 app = Flask(__name__)
 
 # Set up the database configuration using the environment variable "DATABASE_URL"
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get("DATABASE_URL")
 
 # Disable a warning message (not harmful, but unnecessary)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
