@@ -1,25 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Messages</title>
+    <title>Personal Info Form</title>
 </head>
 <body>
-    <h1>Messages</h1>
+    <h1>Submit Your Info</h1>
+    <form method="post" action="/add">
+        <label>Name:</label><br>
+        <input type="text" name="name" required><br>
+
+        <label>Email:</label><br>
+        <input type="email" name="email" required><br>
+
+        <label>Age:</label><br>
+        <input type="number" name="age" required><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <h2>All Submissions</h2>
     <ul>
-        {% for msg in messages %}
+        {% for person in people %}
             <li>
-                {{ msg.id }}: {{ msg.text }}
-                <form method="POST" action="/delete/{{ msg.id }}" style="display:inline;">
+                {{ person.name }} ({{ person.email }}, {{ person.age }} years old)
+                <form method="POST" action="/delete/{{ person.id }}" style="display:inline;">
                     <button type="submit">Delete</button>
                 </form>
             </li>
         {% endfor %}
     </ul>
-
-    <h2>Add a New Message</h2>
-    <form method="post" action="/add">
-        <input type="text" name="text" placeholder="Your message" required>
-        <button type="submit">Add</button>
-    </form>
 </body>
 </html>

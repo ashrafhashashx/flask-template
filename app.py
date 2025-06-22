@@ -1,7 +1,12 @@
 # Import necessary modules
+from json import dumps, dump
+from pathlib import Path
+
 from flask import Flask, request, render_template  # Flask for building web routes, request for reading URL parameters
 from flask_sqlalchemy import SQLAlchemy   # SQLAlchemy is a database toolkit for Python
 import os                                 # Used to access environment variables like the database URL
+
+OUTPUT_PATH = Path('OUTPUT')
 
 # Create the Flask application
 app = Flask(__name__)
@@ -16,44 +21,44 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # Define a model (table) for storing messages in the database
-class Message(db.Model):
-    id = db.Column(db.Integer, primary_key=True)        # Unique ID for each message (auto-increment)
-    text = db.Column(db.String(100), nullable=False)    # Text of the message (required field)
-
-# # Route for the home page: shows all messages in the database
-# @app.route("/")
-# def home():
-#     messages = Message.query.all()  # Fetch all messages
-#     return "<br>".join([f"{m.id}: {m.text}" for m in messages])  # Show messages as simple HTML
-#
-# # Route to add a new message: /add?text=YourMessage
-# @app.route("/add")
-# def add_message():
-#     text = request.args.get("text", "Hello from Flask!")  # Get message text from URL parameter
-#     msg = Message(text=text)                              # Create new Message object
-#     db.session.add(msg)                                   # Add it to the session
-#     db.session.commit()                                   # Save it to the database
-#     return f"Added: {msg.text}"                           # Confirmation
+class Person(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
+    age = db.Column(db.Integer, nullable=False)
 
 @app.route("/", methods=["GET"])
 def home():
-    messages = Message.query.all()
-    return render_template("home.html", messages=messages)
+    people = Person.query.all()
+    return render_template("home.html", people=people)
 
 @app.route("/add", methods=["POST"])
-def add_message():
-    text = request.form.get("text")
-    msg = Message(text=text)
-    db.session.add(msg)
+def add_person():
+    # Create a dictionary from form data
+    data = {
+        "name": request.form.get("name"),
+        "email": request.form.get("email"),
+        "age": int(request.form.get("age"))
+    }
+
+    # Save it locally
+    with open('test.json', 'w') as f:
+        dump(data, f, indent=4)
+
+    # Save it to the database
+    person = Person(**data)
+    db.session.add(person)
     db.session.commit()
-    return "Message added! <a href='/'>Go back</a>"
+
+    return "Person added! <a href='/'>Go back</a>"
 
 @app.route("/delete/<int:msg_id>", methods=["POST"])
 def delete_message(msg_id):
-    msg = Message.query.get_or_404(msg_id)
-    db.session.delete(msg)
+    person = Person.query.get_or_404(msg_id)
+    db.session.delete(person)
     db.session.commit()
-    return "Message deleted! <a href='/'>Go back</a>"
+    return "Person deleted! <a href='/'>Go back</a>"
+
 
 
 # Create the database tables (only runs if they don't exist yet)
