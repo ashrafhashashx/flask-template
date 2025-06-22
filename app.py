@@ -41,9 +41,6 @@ def add_person():
         "age": int(request.form.get("age"))
     }
 
-    # Save it locally
-    with open('test.json', 'w') as f:
-        dump(data, f, indent=4)
 
     # Save it to the database
     person = Person(**data)
